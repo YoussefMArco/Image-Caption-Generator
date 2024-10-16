@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Image Captioning</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f9;
+        margin: 0;
+        padding: 20px;
+      }
+      h1 {
+        text-align: center;
+        color: #333;
+      }
+      h2 {
+        color: #555;
+      }
+      .container {
+        max-width: 600px;
+        margin: 0 auto;
+        text-align: center;
+        padding: 20px;
+        border-radius: 8px;
+        background-color: #fff;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+      img {
+        max-width: 100%;
+        height: auto;
+        margin-top: 10px;
+        border-radius: 5px;
+      }
+      input[type="text"] {
+        width: 80%;
+        padding: 10px;
+        margin: 10px 0;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+      }
+      input[type="file"] {
+        margin-top: 10px;
+      }
+      button {
+        padding: 10px 20px;
+        font-size: 16px;
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+      }
+      button:hover {
+        background-color: #0056b3;
+      }
+      #result {
+        display: none;
+        margin-top: 20px;
+      }
+      #caption {
+        font-weight: bold;
+        margin: 10px 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Image Captioning</h1>
+
+      <!-- Form for uploading an image from a local device -->
+      <h2>Upload Image from Local Device</h2>
+      <form id="local-image-form" enctype="multipart/form-data">
+        <input type="file" name="file" accept="image/*" required />
+        <button type="submit">Upload and Generate Caption</button>
+      </form>
+
+      <!-- Form for providing an image URL -->
+      <h2>Or Enter Image URL</h2>
+      <form id="url-image-form">
+        <input type="text" name="url" placeholder="Enter Image URL" required />
+        <button type="submit">Submit URL and Generate Caption</button>
+      </form>
+
+      <!-- Section for displaying the generated image and caption -->
+      <div id="result">
+        <h2>Generated Caption:</h2>
+        <p id="caption"></p>
+        <img id="uploaded-image" src="" alt="Uploaded Image" />
+      </div>
+    </div>
+
+    <script>
+      const localImageForm = document.getElementById("local-image-form");
+      const urlImageForm = document.getElementById("url-image-form");
+      const resultDiv = document.getElementById("result");
+      const captionElement = document.getElementById("caption");
+      const uploadedImage = document.getElementById("uploaded-image");
+
+      // Function to handle local image upload
+      localImageForm.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        const formData = new FormData(localImageForm);
+        const response = await fetch("/upload/", {
+          method: "POST",
+          body: formData,
+        });
+        const data = await response.json();
+        displayResult(data);
+      });
+
+      // Function to handle URL image submission
+      urlImageForm.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        const url = urlImageForm.url.value;
+        const response = await fetch("/generate_caption_url/", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ url }),
+        });
+        const data = await response.json();
+        displayResult(data);
+      });
+
+      // Function to display the result
+      function displayResult(data) {
+        if (data.caption) {
+          captionElement.textContent = data.caption;
+          uploadedImage.src = data.imageUrl || data.fileUrl; // Correctly update the image source
+          resultDiv.style.display = "block";
+        } else {
+          captionElement.textContent = "Error generating caption.";
+          uploadedImage.src = ""; // Clear previous image
+          resultDiv.style.display = "none"; // Hide result if error
+        }
+      }
+    </script>
+  </body>
+</html>

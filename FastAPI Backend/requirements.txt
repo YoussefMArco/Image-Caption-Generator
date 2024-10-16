@@ -1,0 +1,6 @@
+fastapi
+uvicorn
+Pillow
+requests
+transformers
+torch
