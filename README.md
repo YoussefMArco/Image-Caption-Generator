@@ -51,3 +51,6 @@ The model's performance can be evaluated using metrics like BLEU scores. Make su
 
 Acknowledgments
 - The project leverages state-of-the-art deep learning models for image captioning.
+
+Demo Video Link:
+https://drive.google.com/file/d/16p9XACoHYwmWuO6K3GlFuoN5GWSEUXNO/view?usp=sharing
